@@ -1,6 +1,7 @@
 # SFTPGo для e-cloudfiles.ru
 
-Сервер: **135.106.216.133**, ОС: **Ubuntu 24.04**.
+ОС: **Ubuntu 24.04**. Во всех примерах замените `YOUR_SERVER_IP` на публичный
+IPv4 своего VPS. Установщик запросит его при запуске; в проекте IP не хранится.
 
 В корне репозитория находится установщик `install-e-cloudfiles.sh`.
 Он рассчитан на новый VPS со свободными TCP-портами 80, 443 и 18080.
@@ -14,7 +15,7 @@
 
 | Тип | Имя | Значение |
 |---|---|---|
-| A | @ | 135.106.216.133 |
+| A | @ | YOUR_SERVER_IP |
 
 У корневого домена должна остаться одна A-запись с этим адресом.
 MX, TXT и записи других поддоменов менять не нужно.
@@ -38,8 +39,8 @@ SSH-порту. Установщик не меняет правила сущес
 Сохраните `install-e-cloudfiles.sh` в `D:\Downloads`. Выполните в PowerShell:
 
 ```powershell
-scp "D:\Downloads\install-e-cloudfiles.sh" root@135.106.216.133:/root/
-ssh root@135.106.216.133
+scp "D:\Downloads\install-e-cloudfiles.sh" root@YOUR_SERVER_IP:/root/
+ssh root@YOUR_SERVER_IP
 ```
 
 Введите пароль VPS, если SSH его запросит. Затем уже в консоли VPS:
@@ -47,6 +48,9 @@ ssh root@135.106.216.133
 ```bash
 bash /root/install-e-cloudfiles.sh
 ```
+
+В ответ на `Enter the public IPv4 address of this VPS` введите публичный IP
+сервера. Это тот же адрес, который вы указали в A-записи домена.
 
 Если у вас другой SSH-пользователь, загрузите файл в его домашнюю папку и
 запустите через `sudo bash install-e-cloudfiles.sh`.

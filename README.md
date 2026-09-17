@@ -1,10 +1,10 @@
-# e-cloudfiles
+# SFTPGo-manager
 
 Личный файловый сервер на **SFTPGo** для Ubuntu 24.04. Доступ через браузер
 компьютера и телефона, отдельная панель администратора, пользователи с разными
 правами и автоматический HTTPS через Caddy.
 
-Проект подготовлен для репозитория **dagmagnat/e-cloudfiles**.
+Проект подготовлен для репозитория **dagmagnat/SFTPGo-manager**.
 [Как загрузить файлы в GitHub](docs/PUBLISH.ru.md).
 
 ## Настройки
@@ -12,40 +12,44 @@
 | Параметр | Значение |
 |---|---|
 | Домен | `e-cloudfiles.ru` |
-| IPv4 VPS | `135.106.216.133` |
+| IPv4 VPS | Запрашивается при установке |
 | ОС | Ubuntu 24.04 |
 | SFTPGo | `drakkan/sftpgo:v2.7.5` |
 | Caddy | `caddy:2.11.4-alpine` |
 | Каталог установки | `/opt/e-cloudfiles` |
 
-Для другого сервера измените `DOMAIN` и `EXPECTED_IP` в начале установщика.
+Установщик спросит публичный IPv4 вашего VPS. IP не хранится в исходном коде.
+Для другого домена измените `DOMAIN` в начале установщика.
 Скрипт рассчитан на новую установку; повторный запуск поверх существующих данных
 останавливается. Это установщик, а не механизм обновления.
 
 ## Установка
 
-1. В DNS создайте **одну A-запись** `@ → 135.106.216.133`. Уберите прежние
+1. В DNS создайте **одну A-запись** `@ → YOUR_SERVER_IP`. Уберите прежние
    A-записи именно корневого домена, если они больше не нужны. На время этой
    IPv4-установки у него не должно быть AAAA-записи. Остальные записи не меняйте.
 2. Разрешите входящие TCP **80 и 443** в firewall VPS и у провайдера, сохранив
    доступ SSH. На сервере должны быть свободны TCP 80, 443 и 18080.
-3. Подключитесь к VPS:
+3. Подключитесь к VPS, заменив `YOUR_SERVER_IP` на его настоящий IP:
 
    ```bash
-   ssh root@135.106.216.133
+   ssh root@YOUR_SERVER_IP
    ```
 
 4. После публикации файлов этого проекта в ветке `main` выполните на VPS:
 
    ```bash
    apt-get update && apt-get install -y curl ca-certificates
-   curl -fL https://raw.githubusercontent.com/dagmagnat/e-cloudfiles/main/install-e-cloudfiles.sh -o install-e-cloudfiles.sh
+   curl -fL --output install-e-cloudfiles.sh \
+     https://raw.githubusercontent.com/dagmagnat/SFTPGo-manager/main/install-e-cloudfiles.sh &&
    bash install-e-cloudfiles.sh
    ```
 
    Команды выше выполняются под `root`. Для другого пользователя используйте
    `sudo` перед `apt-get` и `bash`. Можно также скопировать установщик на VPS
    вручную: [подробная инструкция](docs/INSTALL.ru.md).
+
+При запросе `Enter the public IPv4 address of this VPS` введите IP своего сервера.
 
 Установщик проверит DNS, установит Docker при необходимости, запустит SFTPGo,
 создаст учётные записи и настроит HTTPS. Пароли генерируются на VPS и не входят

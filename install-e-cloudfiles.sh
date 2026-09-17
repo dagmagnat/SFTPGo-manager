@@ -5,13 +5,23 @@ set -Eeuo pipefail
 umask 077
 
 DOMAIN=e-cloudfiles.ru
-EXPECTED_IP=135.106.216.133
+EXPECTED_IP="${EXPECTED_IP:-}"
 APP_DIR=/opt/e-cloudfiles
 SFTPGO_IMAGE=drakkan/sftpgo:v2.7.5
 CADDY_IMAGE=caddy:2.11.4-alpine
 scratch=""
 
 die() { printf '\nERROR: %s\n' "$*" >&2; exit 1; }
+valid_ipv4() {
+  local octet
+  local -a octets
+  [[ "$1" != *$'\n'* && "$1" != *$'\r'* ]] || return 1
+  [[ "$1" =~ ^[0-9]{1,3}(\.[0-9]{1,3}){3}$ ]] || return 1
+  IFS=. read -r -a octets <<< "$1"
+  for octet in "${octets[@]}"; do
+    ((10#$octet <= 255)) || return 1
+  done
+}
 cleanup() {
   if [[ -n "$scratch" && -d "$scratch" ]]; then
     rm -f -- "$scratch"/*
@@ -29,6 +39,11 @@ source /etc/os-release
 command -v ss >/dev/null || die 'Install iproute2 first.'
 busy="$(ss -H -ltn '( sport = :80 or sport = :443 or sport = :18080 )')"
 [[ -z "$busy" ]] || die "Ports 80, 443 or 18080 are already in use. Keep the current service; integration is needed first.\n$busy"
+
+if [[ -z "$EXPECTED_IP" ]]; then
+  read -r -p 'Enter the public IPv4 address of this VPS: ' EXPECTED_IP || die 'An IPv4 address is required. Run interactively or set EXPECTED_IP.'
+fi
+valid_ipv4 "$EXPECTED_IP" || die 'Invalid IPv4 address. Enter four numbers from 0 to 255 separated by dots.'
 
 printf '\nInstalling prerequisites...\n'
 apt-get update

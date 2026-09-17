@@ -1,15 +1,15 @@
 # Как загрузить проект в GitHub
 
-1. Распакуйте архив `e-cloudfiles-github.zip` на компьютере.
+1. Распакуйте архив `SFTPGo-manager-fixed.zip` на компьютере.
 2. Войдите в GitHub под `dagmagnat`, откройте https://github.com/new.
-3. В поле Repository name укажите **e-cloudfiles**. Выберите **Public**, чтобы
+3. В поле Repository name укажите **SFTPGo-manager**. Выберите **Public**, чтобы
    команда скачивания установщика работала без токена GitHub.
 4. Создайте пустой репозиторий кнопкой Create repository. README, .gitignore
    и лицензию на этом шаге добавлять не нужно: файлы проекта уже подготовлены.
 5. На странице нового репозитория выберите **uploading an existing file**.
    Если репозиторий уже содержит файлы, используйте **Add file → Upload files**
    и предварительно убедитесь, что не перезаписываете другой проект.
-6. Откройте распакованную папку `e-cloudfiles` и перетащите **её содержимое**
+6. Откройте распакованную папку `SFTPGo-manager` и перетащите **её содержимое**
    в окно загрузки, включая `.github`, `.gitattributes` и `.gitignore`.
    Не загружайте ZIP и не вкладывайте проект в дополнительную папку.
 7. Нажмите Commit changes. Ветка должна называться **main**.
@@ -32,7 +32,7 @@ docs/PUBLISH.ru.md
 Затем выполните шаги установки из [README](../README.md).
 
 Команда в README ожидает точный адрес:
-`https://raw.githubusercontent.com/dagmagnat/e-cloudfiles/main/install-e-cloudfiles.sh`.
+`https://raw.githubusercontent.com/dagmagnat/SFTPGo-manager/main/install-e-cloudfiles.sh`.
 При другом имени репозитория или ветки этот адрес нужно изменить.
 
 Пароли появятся только после запуска на VPS. Не загружайте в GitHub каталог
