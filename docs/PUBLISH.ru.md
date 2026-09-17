@@ -1,6 +1,6 @@
 # Как загрузить проект в GitHub
 
-1. Распакуйте архив `SFTPGo-manager-fixed.zip` на компьютере.
+1. Распакуйте архив `SFTPGo-manager-universal.zip` на компьютере.
 2. Войдите в GitHub под `dagmagnat`, откройте https://github.com/new.
 3. В поле Repository name укажите **SFTPGo-manager**. Выберите **Public**, чтобы
    команда скачивания установщика работала без токена GitHub.

@@ -4,14 +4,20 @@
 set -Eeuo pipefail
 umask 077
 
-DOMAIN=e-cloudfiles.ru
-EXPECTED_IP="${EXPECTED_IP:-}"
+DOMAIN=""
+EXPECTED_IP=""
 APP_DIR=/opt/e-cloudfiles
 SFTPGO_IMAGE=drakkan/sftpgo:v2.7.5
 CADDY_IMAGE=caddy:2.11.4-alpine
 scratch=""
 
 die() { printf '\nERROR: %s\n' "$*" >&2; exit 1; }
+valid_domain() {
+  local tld="${1##*.}"
+  [[ ${#1} -le 253 && "$1" != *$'\n'* && "$1" != *$'\r'* ]] || return 1
+  [[ "$1" =~ ^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$ ]] || return 1
+  [[ "$tld" =~ [a-z] ]]
+}
 valid_ipv4() {
   local octet
   local -a octets
@@ -40,11 +46,23 @@ command -v ss >/dev/null || die 'Install iproute2 first.'
 busy="$(ss -H -ltn '( sport = :80 or sport = :443 or sport = :18080 )')"
 [[ -z "$busy" ]] || die "Ports 80, 443 or 18080 are already in use. Keep the current service; integration is needed first.\n$busy"
 
-if [[ -z "$EXPECTED_IP" ]]; then
-  read -r -p 'Enter the public IPv4 address of this VPS: ' EXPECTED_IP || die 'An IPv4 address is required. Run interactively or set EXPECTED_IP.'
-fi
-valid_ipv4 "$EXPECTED_IP" || die 'Invalid IPv4 address. Enter four numbers from 0 to 255 separated by dots.'
+# Collect deployment settings before installing packages or creating files.
+while ! valid_domain "$DOMAIN"; do
+  read -r -p 'Enter your domain (without https:// or a path): ' DOMAIN || die 'A domain is required. Run this script interactively.'
+  DOMAIN="${DOMAIN,,}"
+  DOMAIN="${DOMAIN%.}"
+  if ! valid_domain "$DOMAIN"; then
+    printf 'Invalid domain. Use a domain or subdomain; use Punycode for international names.\n' >&2
+  fi
+done
+while ! valid_ipv4 "$EXPECTED_IP"; do
+  read -r -p 'Enter the public IPv4 address of this VPS: ' EXPECTED_IP || die 'An IPv4 address is required. Run this script interactively.'
+  if ! valid_ipv4 "$EXPECTED_IP"; then
+    printf 'Invalid IPv4 address. Enter four numbers from 0 to 255 separated by dots.\n' >&2
+  fi
+done
 
+# Install prerequisites only after validating the supplied settings.
 printf '\nInstalling prerequisites...\n'
 apt-get update
 apt-get install -y ca-certificates curl openssl dnsutils jq
